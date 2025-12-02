@@ -28,9 +28,24 @@ def scrape_flights(url: str):
             data[name] = value
 
         # harga tampilannya ada di span.tvl-price
+        avail_seats = form.select_one("span.tvl-availseat")
         price_tag = form.select_one("span.tvl-price")
+        price_string = price_tag.get_text(strip=True)
+
+        # print(f"Hasil string awal: {price_string}")
+        cleaned_price = price_string.replace('Rp ', '').replace('.', '')
+
+        try:
+        # Mengubah string yang bersih menjadi integer
+            price_integer = int(cleaned_price)
+            # print(f"Hasil integer akhir: {price_integer}")
+        except ValueError as e:
+            print(f"Gagal mengkonversi ke integer. Error: {e}")
+            print("Pastikan string yang bersih hanya berisi angka.")
         if price_tag:
-            data["display_price"] = price_tag.get_text(strip=True)
+            data["display_price"] = price_integer
+        if avail_seats:
+            data["avail_seat"] = avail_seats.get_text(strip=True)
 
         flights.append(data)
 
